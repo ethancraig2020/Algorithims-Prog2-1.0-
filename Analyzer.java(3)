@@ -1,0 +1,78 @@
+import java.io.File;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+public class Analyzer {
+	//compute polynomial hash code according to page 413 in our book
+	//Use horner's method 
+	public static int hashCode(int a, String x) {
+		int n = x.length();
+		int a_power = a;
+		int hash = x.charAt(n-1);
+		System.out.println(x.charAt(n-1) + ": " + (int)x.charAt(n-1));
+		for(int i=n-2; i>=0; i--){
+			System.out.print(" + " + a_power + " * " + x.charAt(i) + ": " + (int)x.charAt(i));
+			hash += x.charAt(i) * a_power;
+			a_power = a_power * a;
+		}
+		System.out.println(" = h(" + a + ", " + x + ") = " + hash);
+		return hash;
+		}
+    
+	
+	
+	
+	public static void main(String[] args) {
+		// Read in words from file
+		ArrayList<String> words = new ArrayList<String>();
+		try {
+			File file = new File("dictionary.txt");
+			Scanner scanner = new Scanner(file);
+			while (scanner.hasNext()) {
+				String word = scanner.next();
+				words.add(word);
+			}
+			scanner.close();
+		} catch (FileNotFoundException e) {
+			System.out.println("File not found.");
+		}
+		
+		// Initialize hash table
+		int mapSize = 101;
+		String[] hashTable = new String[mapSize];
+		int maxCollisions = 0;
+		int keyNumber = 0;
+		
+		// Compute hash codes and insert into hash table
+		for (String word : words) {
+			int hash = hashCode(2, word);
+			int index = hash % mapSize;
+			int collisions = 0;
+			while (hashTable[index] != null) {
+				index = (index + 1) % mapSize;
+				collisions++;
+			}
+			if (collisions > maxCollisions) {
+				maxCollisions = collisions;
+			}
+			hashTable[index] = word;
+			keyNumber++;
+		}
+		
+		// Print results
+		hashCode(2, "stop");
+		hashCode(3, "stop");
+		hashCode(2, "pots");
+		hashCode(1, "stop");
+		hashCode(1, "pots");
+		hashCode(1, "tops");
+		System.out.println("Map size: " + mapSize);
+		System.out.println("Max collisions: " + maxCollisions);
+		System.out.println("Key number: " + keyNumber);
+		System.out.println("Words in hash table:");
+		System.out.println("Two example words:");
+		System.out.println(words.get(0));
+		System.out.println(words.get(words.size() - 1));
+	}
+}
