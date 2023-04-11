@@ -1,0 +1,55 @@
+import java.io.File;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class Analyzer {
+	public static int hashCode(int a, String x) {
+		int hash = 0;
+		for (int i = 0; i < x.length(); i++) {
+			hash = a * hash + x.charAt(i);
+		}
+		return hash;
+	}
+
+	public static void main(String[] args) {
+		int[] valuesOfA = { 32, 33, 34, 35, 36, 37, 38, 39, 40, 41 };
+		for (int a : valuesOfA) {
+			Map<Integer, List<String>> hashCodes = new HashMap<>();
+			try {
+				Scanner scanner = new Scanner(new File("dictionary.txt"));
+				while (scanner.hasNextLine()) {
+					String word = scanner.nextLine().trim();
+					int hashCode = hashCode(a, word);
+					List<String> wordsWithSameHashCode = hashCodes.getOrDefault(hashCode, new ArrayList<>());
+					wordsWithSameHashCode.add(word);
+					hashCodes.put(hashCode, wordsWithSameHashCode);
+				}
+				scanner.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("File not found: " + e.getMessage());
+				return;
+			}
+
+			System.out.println("Value of a: " + a);
+			System.out.println("Size of map: " + hashCodes.size());
+			int maxCollisionValue = 0;
+			List<String> maxCollisionList = new ArrayList<>();
+			for (Map.Entry<Integer, List<String>> entry : hashCodes.entrySet()) {
+				List<String> wordsWithSameHashCode = entry.getValue();
+				if (wordsWithSameHashCode.size() > maxCollisionValue) {
+					maxCollisionValue = wordsWithSameHashCode.size();
+					maxCollisionList = wordsWithSameHashCode;
+				}
+			}
+			System.out.println("Max Collision Value: " + maxCollisionValue);
+			if (maxCollisionValue < 10) {
+				System.out.println("List of collided words: " + maxCollisionList);
+			}
+			System.out.println("-------------------------------------------------------");
+		}
+	}
+}
