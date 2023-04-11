@@ -1,0 +1,61 @@
+import java.io.File;
+import java.util.Scanner;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Analyzer {
+
+    public static int hashCode(int a, String x) {
+        int n = x.length();
+        int a_power = a;
+        int hash = x.charAt(n-1);
+        System.out.println(x.charAt(n-1) + ": " + (int)x.charAt(n-1));
+        for(int i=n-2; i>=0; i--){
+            System.out.print(" + " + a_power + " * " + x.charAt(i) + ": " + (int)x.charAt(i));
+            hash += x.charAt(i) * a_power;
+            a_power = a_power * a;
+        }
+        System.out.println(" = h(" + a + ", " + x + ") = " + hash);
+        return hash;
+    }
+
+    public static void main(String[] args) {
+		int[] valuesOfA = {32,33,34,35,36,37,38,39,40,41};
+		for(int a : valuesOfA) {
+			Map<Integer, List<String>> hashCodes = new HashMap<>();
+			try{
+				Scanner scanner = new Scanner(new File("dictionary.txt"));
+				while(scanner.hasNextLine()){
+					String word = scanner.nextLine().trim();
+					int hashCode = hashCode(a, word);
+					List<String> wordsWithSameHashCode = hashCodes.getOrDefault(hashCode, new ArrayList<>());
+					wordsWithSameHashCode.add(word);
+					hashCodes.put(hashCode, wordsWithSameHashCode);
+				}
+				scanner.close();
+				}
+				catch (FileNotFoundException e){
+					System.out.println("File Not Found " + e.getMessage());
+					return;
+				}
+				System.out.println("Value of a: " + a);
+				System.out.println("Map Size: " + hashCodes.size());
+				int MaxCollisionValue = 0;
+				List<String> maxCollisionList = new ArrayList<>();
+				for(Map.Entry<Integer, List<String>> entry : hashCodes.entrySet()){
+					List<String> wordsWithSameHashCode = entry.getValue();
+					if(wordsWithSameHashCode.size() > maxCollisionValue){
+						maxCollisionValue = wordsWithSameHashCode.size();
+						maxCollisionList = wordsWithSameHashCode;
+					}
+				}
+				System.out.println("Max Collision: " + maxCollisionValue);
+				if(maxCollisionValue < 10){
+					System.out.println("Collided words: " + maxCollisionList);
+				}
+				System.out.println("------------------------------------------------------------");
+				}
+			}
+		}
